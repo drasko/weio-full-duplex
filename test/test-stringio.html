@@ -1,0 +1,76 @@
+<!doctype html>
+<html><head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+    
+</head><body lang="en">
+    <h1>SockJS Echo example</h1>
+
+    <p id="stdoutconsole"></p>
+    <p id="stderrconsole"></p>
+
+    <div id="cfgreq">
+      <div></div>
+    </div>
+
+    <button id="btn1">Test Communication <p>WiFi Networks</p></button>
+
+    <script>
+		//var sockjs_url = '/weio';
+        var sockjs_url = 'http://localhost:8082/test';		 
+        var sockjs = new SockJS(sockjs_url);
+
+        var stdout_sockjs_url = 'http://localhost:8082/stdout';		 
+        var stdout_sockjs = new SockJS(stdout_sockjs_url);
+
+        var stderr_sockjs_url = 'http://localhost:8082/stderr';		 
+        var stderr_sockjs = new SockJS(stderr_sockjs_url);
+
+        var div  = $('#cfgreq div');
+
+        var print = function(m, p) {
+            p = (p === undefined) ? '' : JSON.stringify(p);
+            div.append($("<code>").text(m + ' ' + p));
+            div.append($("<br>"));
+            div.scrollTop(div.scrollTop()+10000);
+        };
+
+        sockjs.onopen    = function()  {print('[*] open', sockjs.protocol);};
+        sockjs.onmessage = function(e) {
+            var pydat = JSON.parse(e.data);
+            print('[.] message', pydat["name"]);
+        };
+        sockjs.onclose   = function()  {print('[*] close');};
+
+
+
+        stdout_sockjs.onmessage = function(e) {
+            var pydat = JSON.parse(e.data);
+            if (pydat) {
+                $('#stdoutconsole').append(e.data);
+            }
+        }
+
+        stderr_sockjs.onmessage = function(e) {
+            var pydat = JSON.parse(e.data);
+            if (pytdat) {
+                $('#stderrconsole').append(e.data);
+            }
+        }
+
+
+	  </script>
+
+	<script>
+		$(document).ready(function(){
+			$("#btn1").click(function(){
+				print('[ ] sending WIFI_CONF_REQ');
+				sockjs.send("WIFI_CONF_REQ");
+			});
+		});
+
+
+		</script>
+
+
+</body></html>
