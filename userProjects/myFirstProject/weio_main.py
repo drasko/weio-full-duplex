@@ -17,18 +17,27 @@ import time
 
 import thread
 
-def WeioGetConfig() :
-    command = "/sbin/ifconfig"
-    output = "PLACEHOLDER"
 
-    try :
-        output = subprocess.check_output(command)
-    except :
-        output = "ERR_CFG"
-	
-    print output
-    return output
+def runWeio():
+    import logging
+    logging.getLogger().setLevel(logging.DEBUG)
 
+    TestRouter = sockjs.tornado.SockJSRouter(TestConnection, '/test')
+
+    app = tornado.web.Application(TestRouter.urls)
+    app.listen(8082)
+    
+    logging.info(" [*] Listening on 0.0.0.0:8082/test")
+    
+    thread.start_new_thread(MainProgram, ())
+    
+    tornado.ioloop.IOLoop.instance().start()
+    
+    
+    
+    
+    
+    
 
 class TestConnection(sockjs.tornado.SockJSConnection):
     def on_message(self, msg):
@@ -50,18 +59,25 @@ def MainProgram() :
         print(str(a))
         time.sleep(0.5)
 
+runWeio()
 
-if __name__ == '__main__':
-    import logging
-    logging.getLogger().setLevel(logging.DEBUG)
 
-    TestRouter = sockjs.tornado.SockJSRouter(TestConnection, '/test')
 
-    app = tornado.web.Application(TestRouter.urls)
-    app.listen(8082)
 
-    logging.info(" [*] Listening on 0.0.0.0:8082/test")
 
-    thread.start_new_thread(MainProgram, ())
 
-    tornado.ioloop.IOLoop.instance().start()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

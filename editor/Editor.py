@@ -165,26 +165,8 @@ class WeioEditorHandler(SockJSConnection):
             #                
             
             #####################################
-            # open UNIX DOMAIN SOCKET
+            # OPEN PIPE
             #####################################
-            
-            # TODO pass type of socket in constructor
-            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM, 0)
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.setblocking(0)
-            server_address = "uds_weio_mainStdOut"
-
-            # Make sure the socket does not already exist
-            try:
-                os.unlink(server_address)
-            except OSError:
-                if os.path.exists(server_address):
-                    raise
-
-            sock.bind(server_address)
-            # how many connections I can accept
-            sock.listen(10)               
-
 
             #subprocess.call("python " + processName, shell=True)
             #self.pipe = p = subprocess.Popen(['python', '-u', processName], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
