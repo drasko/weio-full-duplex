@@ -1,83 +1,48 @@
-# -*- coding: utf-8 -*-
-"""
-    Simple sockjs-tornado application. By default will listen on port 8080.
-"""
-import tornado.ioloop
-import tornado.web
-import tornado.httpserver
-import tornado.options
-import tornado.gen
-
-import sockjs.tornado
-
-import subprocess
+import time
+import sys
 import json
 
-import time
+sys.path.append(r'./')
+from weioLib.weioUserApi import *
 
-import thread
+# Simple standalone application, no web interface
+# Reads digital potentiometer from A0 pin to blink LED slower or 
+# faster at digital pin 13
+
+LED_PIN = 13
+POTENTIOMETER_PIN = "A0"
 
 
-def runWeio():
-    import logging
-    logging.getLogger().setLevel(logging.DEBUG)
-
-    TestRouter = sockjs.tornado.SockJSRouter(TestConnection, '/test')
-
-    app = tornado.web.Application(TestRouter.urls)
-    app.listen(8082)
+def WeioUserSetup() :
+    # tells that on LED pin we want output
+    #pinMode(LED_PIN, OUTPUT) 
     
-    logging.info(" [*] Listening on 0.0.0.0:8082/test")
+    # Attaches sensor function to infinite loop 
+    attach.process(blinky, ("Test", 10))
     
-    thread.start_new_thread(MainProgram, ())
+    # Attaches sensor function to infinite loop 
+    attach.process(potentiometer)
+
+    # Instanciate shared objects
+    shared.val = 1
     
-    tornado.ioloop.IOLoop.instance().start()
-    
-    
-    
-    
-    
-    
+def potentiometer() :
+    #val = analogRead(POTENTIOMETER_PIN)
+    # map values between 0-1023 to time intervals 50 millis - 1000 millis
+    #val = map(val, 0,1023, 50,1000)
 
-class TestConnection(sockjs.tornado.SockJSConnection):
-    def on_message(self, msg):
-        logging.info("Button pressed")
-        #msg = WeioGetConfig()
+    while (1) :
+        print("potentiometer") 
+        shared.val = shared.val + 1
 
-        wcfg = {};
-        wcfg['id'] = 1
-        wcfg['name'] = 'Drasko DRASKOVIC'
-        wcfg['size'] = 190
-		 
-        self.send(json.dumps(wcfg))
-
-    def on_open(self, info):
-		 logging.info("Socket OPEN")
-
-def MainProgram() :
-    for a in range(1000) :
-        print(str(a))
-        time.sleep(0.5)
-
-runWeio()
+        time.sleep(1)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def blinky(s, k) :
+    i = 0
+    while (1) :
+        print("blinky")
+        i = i+1
+        time.sleep(shared.val)
+        print s
+        print k
